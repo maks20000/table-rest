@@ -66,11 +66,10 @@
                                 :id="'input_'+j+'_'+index"
                                 v-if="!item.date && !field.select && !field.date" 
                                 @change="changeField(item, j,field.el,$event.target.value)" 
-                                @input="'size='+$event.target.value.length+1"
+                                @input="size($event)"
                                 :readonly="!field.edit" class ="field-input"
                                 :value="item[field.el]"
-                                :size="setSize(item[field.el])"
-                                > 
+                                :size="setSize(item[field.el])"> 
                             <input 
                             :id="'input_'+j+'_'+index"
                             :type="editDate(field.edit)" @change="changeField(item, j,field.el,$event.target.value)" 
@@ -94,6 +93,7 @@
 
 <script>
 import {mapGetters} from 'vuex'
+import _fields from "../fields"
 export default {
     data () {
         return {
@@ -107,108 +107,7 @@ export default {
                 start:"",
                 end:""
             },
-            fields:[
-                {
-                    name:"Название ресторана",
-                    el:"business_name",
-                    canEdit:true,
-                    edit:true,
-                    sort:-1,
-                    show: true,
-                },
-                {
-                    name:"Адрес ресторана",
-                    el:"business_address",
-                    canEdit:true,
-                    edit:true,
-                    sort:-1,
-                    show: true,
-                },
-                {
-                    name:"Город",
-                    el:"business_city",
-                    canEdit:true,
-                    edit:true,
-                    sort:-1,
-                    show: true,
-                },
-                {
-                    name:"Штат",
-                    el:"business_state",
-                    canEdit:false,
-                    edit:false,
-                    sort:-1,
-                    show: false,
-                },
-                {
-                    name:"Телефон",
-                    el:"business_phone_number",
-                    canEdit:true,
-                    edit:true,
-                    sort:-1,
-                    show: true,
-                },
-                {
-                    name:"Описание местоположения",
-                    el:"business_location",
-                    canEdit:false,
-                    edit:false,
-                    sort:-1,
-                    show: false,
-                },
-                {
-                    name:"Почтовый индекс",
-                    el:"business_postal_code",
-                    canEdit:true,
-                    edit:true,
-                    sort:-1,
-                    show: true,
-                },
-                {
-                    name:"Дата инспекции",
-                    el:"inspection_date",
-                    canEdit:true,
-                    edit:false,
-                    date:true,
-                    sort:-1,
-                    show: true,
-                },
-                {
-                    name:"Статус инспекции",
-                    el:"inspection_description",
-                    canEdit:true,
-                    edit:true,
-                    sort:-1,
-                    show: true,
-                    select: true,
-                    selectValue: [
-                        "NO ACTION",
-                        "REINSPECTION REQUIRED",
-                        "SHORTER DATE ADVANCE",
-                        "ISSUED PERMIT",
-                    ],
-                    selected:""
-                },
-                {
-                    name:"Тип проведения инспекции",
-                    el:"inspection_type",
-                    canEdit:true,
-                    edit:true,
-                    sort:-1,
-                    show: true,
-                    select: true,
-                    selectValue: [
-                        "Regular",
-                        "Opening",
-                        "Reinspection",
-                        "Other",
-                        "Change of Ownership",
-                        "Complaint",
-                        "Enforcement"
-                    ],
-                    selected:""
-                },
-            ]
+            fields:_fields.fields
         }
     },
     methods: {
@@ -256,24 +155,29 @@ export default {
             }
         },
         addField (name) {
-            let key = "field"+this.fields.length;
-            let newField = {
-                    name:name,
-                    el:key,
-                    canEdit:true,
-                    edit:false,
-                    sort:-1,
-                    show: true,
-                }
-            this.fields.push(newField);
-            this.add=false;
-            let data = {name:name, key:key}
-            this.$store.commit("addField",key)
+            if (name!="") {
+                let key = "field"+this.fields.length;
+                let newField = {
+                        name:name,
+                        el:key,
+                        canEdit:true,
+                        edit:false,
+                        sort:-1,
+                        show: true,
+                    }
+                this.fields.push(newField);
+                this.add=false;
+                let data = {name:name, key:key}
+                this.$store.commit("addField",key)
+            }
         },
         elementCount () {
             if (this.getData!=null) return this.getData.length
             return 0
         },
+        size(e) {
+            e.target.setAttribute("size", e.target.value.length+1);
+        }
     },
 
     computed: {
